@@ -15,6 +15,15 @@ export const months = [
   "December",
 ];
 
+export const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export enum RangeType {
+  Last7D = "Last7D",
+  Last30D = "Last30D",
+  _7D = "7D",
+  _30D = "30D",
+}
+
 export const getCurrentDay = (): Dayjs => dayjs();
 
 export const addMonths = (date: Dayjs, amount: number): Dayjs => {

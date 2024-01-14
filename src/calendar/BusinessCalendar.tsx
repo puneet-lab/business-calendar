@@ -1,6 +1,8 @@
 import dayjs, { Dayjs } from "dayjs";
 import React, { useState } from "react";
 import { addMonths, setMonth, setYear } from "../helpers/utils";
+import CalendarDatePicker from "./CalendarDatePicker";
+import CalendarFooter from "./CalendarFooter";
 import CalendarHeader from "./CalendarHeader";
 
 const BusinessCalendar: React.FC = () => {
@@ -23,6 +25,8 @@ const BusinessCalendar: React.FC = () => {
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
         />
+        <CalendarDatePicker />
+        <CalendarFooter />
       </div>
     </>
   );
