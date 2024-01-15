@@ -1,4 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
 
 export const months = [
   "January",
@@ -33,6 +36,11 @@ export const DAYS_OF_WEEK = {
   SATURDAY: 6,
   SUNDAY: 0,
 };
+
+export interface SelectedRange {
+  start: Dayjs | null;
+  end: Dayjs | null;
+}
 
 export const WEEK_START = DAYS_OF_WEEK.MONDAY;
 export const WEEK_LENGTH = 7;
@@ -79,4 +87,19 @@ export const generateMonthMatrix = (currentMonth: Dayjs): Dayjs[][] => {
     matrix.push(weekRow);
   }
   return matrix;
+};
+
+export const getIsWeekend = (day: Dayjs): boolean => {
+  return (
+    day.day() === DAYS_OF_WEEK.SATURDAY || day.day() === DAYS_OF_WEEK.SUNDAY
+  );
+};
+
+export const isWithinRange = (
+  day: Dayjs,
+  start: Dayjs | null,
+  end: Dayjs | null
+): boolean => {
+  if (!start || !end) return false;
+  return day.isBetween(start, end, "day", "[]");
 };

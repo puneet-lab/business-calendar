@@ -5,6 +5,8 @@ import {
   generateMonthMatrix,
   generateYearRange,
   getCurrentDay,
+  getIsWeekend,
+  isWithinRange,
   setMonth,
   setYear,
 } from "./utils";
@@ -84,6 +86,31 @@ describe("Utility functions", () => {
       const lastRow = matrix[matrix.length - 1];
       const lastDay = lastRow[lastRow.length - 1];
       expect(lastDay.isAfter(month.endOf("month"))).toBe(true);
+    });
+  });
+
+  // Testing getIsWeekend
+  describe("getIsWeekend", () => {
+    it("identifies weekends correctly", () => {
+      const saturday = dayjs("2021-05-01"); // A known Saturday
+      const sunday = dayjs("2021-05-02"); // A known Sunday
+      const weekday = dayjs("2021-04-30"); // A known weekday (Friday)
+
+      expect(getIsWeekend(saturday)).toBe(true);
+      expect(getIsWeekend(sunday)).toBe(true);
+      expect(getIsWeekend(weekday)).toBe(false);
+    });
+  });
+
+  describe("isWithinRange", () => {
+    it("correctly identifies if a day is within a given range", () => {
+      const start = dayjs("2021-05-01");
+      const end = dayjs("2021-05-07");
+      const within = dayjs("2021-05-03");
+      const outside = dayjs("2021-05-10");
+
+      expect(isWithinRange(within, start, end)).toBe(true);
+      expect(isWithinRange(outside, start, end)).toBe(false);
     });
   });
 });
