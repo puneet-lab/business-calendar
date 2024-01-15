@@ -32,6 +32,10 @@ const BusinessCalendar: React.FC = () => {
     }
   };
 
+  const handleRangeSelect = (start: Dayjs, end: Dayjs) => {
+    setSelectedRange({ start, end });
+  };
+
   return (
     <>
       <div className=" grid gap-2 max-w-md mx-auto border border-gray-300 shadow-lg rounded-lg overflow-hidden">
@@ -47,7 +51,10 @@ const BusinessCalendar: React.FC = () => {
           selectedRange={selectedRange}
           handleDayClick={handleDayClick}
         />
-        <CalendarFooter />
+        <CalendarFooter
+          onSelectRange={handleRangeSelect}
+          selectedRange={selectedRange}
+        />
       </div>
     </>
   );

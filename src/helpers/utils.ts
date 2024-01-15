@@ -103,3 +103,104 @@ export const isWithinRange = (
   if (!start || !end) return false;
   return day.isBetween(start, end, "day", "[]");
 };
+
+export const addBusinessDays = (date: Dayjs, days: number): Dayjs => {
+  let d = date;
+  while (days > 0) {
+    d = d.add(1, "day");
+    if (!getIsWeekend(d)) days--;
+  }
+  return d;
+};
+
+export const subtractBusinessDays = (date: Dayjs, days: number): Dayjs => {
+  let d = date;
+  while (days > 0) {
+    d = d.subtract(1, "day");
+    if (!getIsWeekend(d)) days--;
+  }
+  return d;
+};
+
+export const calculateActiveButtonType = (
+  selectedRange: SelectedRange
+): RangeType | "" => {
+  if (!selectedRange.start || !selectedRange.end) return "";
+
+  const startDate = selectedRange.start.isBefore(selectedRange.end)
+    ? selectedRange.start
+    : selectedRange.end;
+  const endDate = selectedRange.start.isBefore(selectedRange.end)
+    ? selectedRange.end
+    : selectedRange.start;
+
+  const today = getCurrentDay();
+  let diffDays = 0;
+  let tempDate = startDate;
+  while (tempDate.isBefore(endDate) || tempDate.isSame(endDate, "day")) {
+    if (!getIsWeekend(tempDate)) {
+      diffDays++;
+    }
+    tempDate = tempDate.add(1, "day");
+  }
+
+  const toCurrentDate =
+    endDate.format("YYYY-MM-DD") === today.format("YYYY-MM-DD");
+
+  const fromCurrentDate =
+    startDate.format("YYYY-MM-DD") === today.format("YYYY-MM-DD");
+
+  if (toCurrentDate) {
+    switch (diffDays) {
+      case 7:
+        return RangeType.Last7D;
+      case 30:
+        return RangeType.Last30D;
+      default:
+        return "";
+    }
+  }
+
+  if (fromCurrentDate) {
+    switch (diffDays) {
+      case 7:
+        return RangeType._7D;
+      case 30:
+        return RangeType._30D;
+      default:
+        return "";
+    }
+  }
+  return "";
+};
+
+export const setRangeBasedOnType = (
+  type: RangeType
+): { start: Dayjs; end: Dayjs } => {
+  const today = getCurrentDay();
+  let start = today;
+  let end = today;
+
+  switch (type) {
+    case RangeType.Last7D:
+      start = subtractBusinessDays(today, 6);
+      end = today;
+      break;
+    case RangeType.Last30D:
+      start = subtractBusinessDays(today, 29);
+      end = today;
+      break;
+    case RangeType._7D:
+      start = today;
+      end = addBusinessDays(today, 6);
+      break;
+    case RangeType._30D:
+      start = today;
+      end = addBusinessDays(today, 29);
+      break;
+    default:
+      break;
+  }
+
+  return { start, end };
+};

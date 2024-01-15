@@ -1,5 +1,15 @@
-import { useState } from "react";
-import { RangeType } from "../helpers/utils";
+import { Dayjs } from "dayjs";
+import { useEffect, useState } from "react";
+import {
+  RangeType,
+  calculateActiveButtonType,
+  setRangeBasedOnType,
+} from "../helpers/utils";
+
+interface CalendarFooterProps {
+  onSelectRange: (start: Dayjs, end: Dayjs) => void;
+  selectedRange: { start: Dayjs | null; end: Dayjs | null };
+}
 
 interface RangeButtons {
   type: RangeType;
@@ -26,10 +36,20 @@ const rangeButtons: RangeButtons[] = [
   },
 ];
 
-const CalendarFooter: React.FC = () => {
+const CalendarFooter: React.FC<CalendarFooterProps> = ({
+  onSelectRange,
+  selectedRange,
+}) => {
   const [activeButton, setActiveButton] = useState<string>("");
 
+  useEffect(() => {
+    const activeType = calculateActiveButtonType(selectedRange);
+    setActiveButton(activeType);
+  }, [selectedRange]);
+
   const selectRange = (type: RangeType) => {
+    const { start, end } = setRangeBasedOnType(type);
+    onSelectRange(start, end);
     setActiveButton(type);
   };
 

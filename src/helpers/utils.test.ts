@@ -1,14 +1,19 @@
 import dayjs from "dayjs";
 import { describe, expect, it } from "vitest";
 import {
+  RangeType,
+  addBusinessDays,
   addMonths,
+  calculateActiveButtonType,
   generateMonthMatrix,
   generateYearRange,
   getCurrentDay,
   getIsWeekend,
   isWithinRange,
   setMonth,
+  setRangeBasedOnType,
   setYear,
+  subtractBusinessDays,
 } from "./utils";
 
 describe("Utility functions", () => {
@@ -111,6 +116,93 @@ describe("Utility functions", () => {
 
       expect(isWithinRange(within, start, end)).toBe(true);
       expect(isWithinRange(outside, start, end)).toBe(false);
+    });
+  });
+
+  // Testing addBusinessDays
+  describe("addBusinessDays", () => {
+    it("correctly adds business days to a date", () => {
+      const start = dayjs("2021-05-06"); // Thursday
+      expect(addBusinessDays(start, 2).format("YYYY-MM-DD")).toBe("2021-05-10"); // Should skip weekend
+    });
+  });
+
+  // Testing subtractBusinessDays
+  describe("subtractBusinessDays", () => {
+    it("correctly subtracts business days from a date", () => {
+      const start = dayjs("2021-05-03"); // Monday
+      expect(subtractBusinessDays(start, 1).format("YYYY-MM-DD")).toBe(
+        "2021-04-30"
+      ); // Previous Friday
+    });
+  });
+
+  describe("calculateActiveButtonType", () => {
+    it("returns the correct RangeType for Last 7-day range", () => {
+      const today = dayjs("2024-01-15");
+      const selectedRange = {
+        start: today.subtract(10, "days"),
+        end: today,
+      };
+      expect(calculateActiveButtonType(selectedRange)).toBe(RangeType.Last7D);
+    });
+
+    it("returns the correct RangeType for next 30-day range", () => {
+      const today = dayjs("2024-01-15");
+      const selectedRange = {
+        start: today,
+        end: today.add(39, "days"),
+      };
+      expect(calculateActiveButtonType(selectedRange)).toBe(RangeType._30D);
+    });
+
+    it('returns "" for ranges not matching predefined types', () => {
+      const selectedRange = {
+        start: dayjs("2021-05-01"),
+        end: dayjs("2021-05-05"),
+      };
+      expect(calculateActiveButtonType(selectedRange)).toBe("");
+    });
+  });
+
+  describe("setRangeBasedOnType", () => {
+    it("correctly sets the range for Last7D", () => {
+      const { start, end } = setRangeBasedOnType(RangeType.Last7D);
+      const today = getCurrentDay();
+      const expectedStart = subtractBusinessDays(today, 6);
+
+      expect(start.format("YYYY-MM-DD")).toBe(
+        expectedStart.format("YYYY-MM-DD")
+      );
+      expect(end.format("YYYY-MM-DD")).toBe(today.format("YYYY-MM-DD"));
+    });
+
+    it("correctly sets the range for Last30D", () => {
+      const { start, end } = setRangeBasedOnType(RangeType.Last30D);
+      const today = getCurrentDay();
+      const expectedStart = subtractBusinessDays(today, 29);
+
+      expect(start.format("YYYY-MM-DD")).toBe(
+        expectedStart.format("YYYY-MM-DD")
+      );
+      expect(end.format("YYYY-MM-DD")).toBe(today.format("YYYY-MM-DD"));
+    });
+
+    it("correctly sets the range for _7D", () => {
+      const { start, end } = setRangeBasedOnType(RangeType._7D);
+      const today = getCurrentDay();
+      const expectedEnd = addBusinessDays(today, 6);
+      expect(start.format("YYYY-MM-DD")).toBe(today.format("YYYY-MM-DD"));
+      expect(end.format("YYYY-MM-DD")).toBe(expectedEnd.format("YYYY-MM-DD"));
+    });
+
+    it("correctly sets the range for _30D", () => {
+      const { start, end } = setRangeBasedOnType(RangeType._30D);
+      const today = getCurrentDay();
+      const expectedEnd = addBusinessDays(today, 29);
+
+      expect(start.format("YYYY-MM-DD")).toBe(today.format("YYYY-MM-DD"));
+      expect(end.format("YYYY-MM-DD")).toBe(expectedEnd.format("YYYY-MM-DD"));
     });
   });
 });
