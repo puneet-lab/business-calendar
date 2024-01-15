@@ -39,7 +39,7 @@ const getDayClassName = (
       : inRange && !isWeekend
       ? `${baseClass} bg-blue-500 text-white`
       : isWeekend
-      ? `${baseClass} bg-gray-400 text-black`
+      ? `${baseClass} bg-gray-400 text-black pointer-events-none`
       : !isCurrentMonth
       ? `${baseClass} bg-gray-100 text-gray-500`
       : `${baseClass} bg-blue-200`;
@@ -78,7 +78,10 @@ const CalendarDatePicker: React.FC<CalendarDatePickerProps> = ({
     <>
       <div className="flex justify-evenly">
         {weekDays.map((day, index) => (
-          <div key={index} className="text-center font-bold">
+          <div
+            key={index}
+            className="w-10 h-10 flex items-center font-bold justify-center rounded-full cursor-pointer  "
+          >
             {day}
           </div>
         ))}

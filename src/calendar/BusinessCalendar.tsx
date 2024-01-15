@@ -1,6 +1,12 @@
 import dayjs, { Dayjs } from "dayjs";
-import React, { useState } from "react";
-import { SelectedRange, addMonths, setMonth, setYear } from "../helpers/utils";
+import React, { useEffect, useState } from "react";
+import {
+  SelectedRange,
+  addMonths,
+  findWeekendDatesInRange,
+  setMonth,
+  setYear,
+} from "../helpers/utils";
 import CalendarDatePicker from "./CalendarDatePicker";
 import CalendarFooter from "./CalendarFooter";
 import CalendarHeader from "./CalendarHeader";
@@ -36,9 +42,31 @@ const BusinessCalendar: React.FC = () => {
     setSelectedRange({ start, end });
   };
 
+  useEffect(() => {
+    const computeAndReturnRange = () => {
+      if (selectedRange.start && selectedRange.end) {
+        const weekends = findWeekendDatesInRange(
+          selectedRange.start,
+          selectedRange.end
+        );
+
+        const result = {
+          range: [
+            selectedRange.start.format("YYYY-MM-DD"),
+            selectedRange.end.format("YYYY-MM-DD"),
+          ],
+          weekends: weekends.map((w) => w.format("YYYY-MM-DD")),
+        };
+        console.log(result);
+      }
+    };
+
+    computeAndReturnRange();
+  }, [selectedRange]);
+
   return (
     <>
-      <div className=" grid gap-2 max-w-md mx-auto border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+      <div className=" grid gap-2 max-w-md mx-auto border border-gray-300 shadow-lg rounded-lg overflow-hidden bg-white">
         <CalendarHeader
           currentMonth={currentMonth.toDate()}
           onMonthChange={handleMonthChange}

@@ -54,7 +54,7 @@ const CalendarFooter: React.FC<CalendarFooterProps> = ({
   };
 
   const getButtonClass = (type: RangeType) =>
-    `px-4 py-2 rounded hover:bg-blue-600 ${
+    `px-4 py-2 rounded hover:bg-blue-600 hover:text-white ${
       type === activeButton ? "bg-blue-500 text-white" : "bg-gray-200"
     }`;
 

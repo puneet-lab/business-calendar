@@ -5,6 +5,7 @@ import {
   addBusinessDays,
   addMonths,
   calculateActiveButtonType,
+  findWeekendDatesInRange,
   generateMonthMatrix,
   generateYearRange,
   getCurrentDay,
@@ -203,6 +204,47 @@ describe("Utility functions", () => {
 
       expect(start.format("YYYY-MM-DD")).toBe(today.format("YYYY-MM-DD"));
       expect(end.format("YYYY-MM-DD")).toBe(expectedEnd.format("YYYY-MM-DD"));
+    });
+  });
+
+  // Testing findWeekendDatesInRange
+  describe("findWeekendDatesInRange", () => {
+    it("identifies weekends correctly within a range", () => {
+      const start = dayjs("2021-04-26"); // Monday
+      const end = dayjs("2021-05-02"); // Sunday
+
+      const weekends = findWeekendDatesInRange(start, end);
+      expect(weekends.length).toBe(2);
+      expect(getIsWeekend(weekends[0])).toBe(true);
+      expect(getIsWeekend(weekends[1])).toBe(true);
+      expect(weekends[0].format("YYYY-MM-DD")).toBe("2021-05-01"); // Saturday
+      expect(weekends[1].format("YYYY-MM-DD")).toBe("2021-05-02"); // Sunday
+    });
+
+    it("handles ranges without weekends", () => {
+      const start = dayjs("2021-04-26"); // Monday
+      const end = dayjs("2021-04-28"); // Wednesday
+
+      const weekends = findWeekendDatesInRange(start, end);
+      expect(weekends.length).toBe(0);
+    });
+
+    it("handles single-day range on a weekend", () => {
+      const start = dayjs("2021-05-01"); // Saturday
+      const end = dayjs("2021-05-01"); // Saturday
+
+      const weekends = findWeekendDatesInRange(start, end);
+      expect(weekends.length).toBe(1);
+      expect(getIsWeekend(weekends[0])).toBe(true);
+      expect(weekends[0].format("YYYY-MM-DD")).toBe("2021-05-01"); // Saturday
+    });
+
+    it("handles single-day range on a weekday", () => {
+      const start = dayjs("2021-04-28"); // Wednesday
+      const end = dayjs("2021-04-28"); // Wednesday
+
+      const weekends = findWeekendDatesInRange(start, end);
+      expect(weekends.length).toBe(0);
     });
   });
 });

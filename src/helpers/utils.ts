@@ -204,3 +204,17 @@ export const setRangeBasedOnType = (
 
   return { start, end };
 };
+
+export const findWeekendDatesInRange = (start: Dayjs, end: Dayjs): Dayjs[] => {
+  let current = start;
+  const weekends = [];
+
+  while (current.isBefore(end) || current.isSame(end, "day")) {
+    if (getIsWeekend(current)) {
+      weekends.push(current);
+    }
+    current = current.add(1, "day");
+  }
+
+  return weekends;
+};
