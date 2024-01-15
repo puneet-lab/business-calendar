@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { describe, expect, it } from "vitest";
 import {
   addMonths,
+  generateMonthMatrix,
   generateYearRange,
   getCurrentDay,
   setMonth,
@@ -53,6 +54,36 @@ describe("Utility functions", () => {
       expect(generateYearRange(span, currentYear)).toEqual([
         2019, 2020, 2021, 2022, 2023,
       ]);
+    });
+  });
+
+  // Testing generateMonthMatrix
+  describe("generateMonthMatrix", () => {
+    it("generates a correct month matrix", () => {
+      const month = dayjs("2021-05-01"); // May 2021
+      const matrix = generateMonthMatrix(month);
+
+      expect(matrix.length).toBe(6); // 6 weeks (rows)
+
+      // Check that the first day of the matrix is the last Monday of April
+      expect(matrix[0][0].format("YYYY-MM-DD")).toBe("2021-04-26");
+
+      // Check that the first day of the month is correctly placed
+      // Find the position of the 1st of May
+      const firstDayPosition = matrix
+        .flat()
+        .findIndex((day) => day.format("YYYY-MM-DD") === "2021-05-01");
+      expect(firstDayPosition).toBeGreaterThanOrEqual(0); // Ensure the 1st of May is in the matrix
+      expect(
+        matrix[Math.floor(firstDayPosition / 7)][firstDayPosition % 7].format(
+          "YYYY-MM-DD"
+        )
+      ).toBe("2021-05-01");
+
+      // Check the last day of the matrix is in June
+      const lastRow = matrix[matrix.length - 1];
+      const lastDay = lastRow[lastRow.length - 1];
+      expect(lastDay.isAfter(month.endOf("month"))).toBe(true);
     });
   });
 });

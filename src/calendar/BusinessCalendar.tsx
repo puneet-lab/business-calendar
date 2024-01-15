@@ -25,7 +25,7 @@ const BusinessCalendar: React.FC = () => {
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
         />
-        <CalendarDatePicker />
+        <CalendarDatePicker currentMonth={currentMonth} />
         <CalendarFooter />
       </div>
     </>

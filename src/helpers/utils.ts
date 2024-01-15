@@ -24,6 +24,19 @@ export enum RangeType {
   _30D = "30D",
 }
 
+export const DAYS_OF_WEEK = {
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6,
+  SUNDAY: 0,
+};
+
+export const WEEK_START = DAYS_OF_WEEK.MONDAY;
+export const WEEK_LENGTH = 7;
+
 export const getCurrentDay = (): Dayjs => dayjs();
 
 export const addMonths = (date: Dayjs, amount: number): Dayjs => {
@@ -46,4 +59,24 @@ export const generateYearRange = (
     { length: span },
     (_, i) => currentYear - Math.floor(span / 2) + i
   );
+};
+
+export const generateMonthMatrix = (currentMonth: Dayjs): Dayjs[][] => {
+  const startOfTheMonth = currentMonth.startOf("month");
+  let firstDayOfWeek = startOfTheMonth.day();
+
+  firstDayOfWeek =
+    firstDayOfWeek === DAYS_OF_WEEK.SUNDAY ? WEEK_LENGTH : firstDayOfWeek;
+  let dayCounter = startOfTheMonth.subtract(firstDayOfWeek - WEEK_START, "day");
+
+  const matrix: Dayjs[][] = [];
+  for (let week = 0; week < 6; week++) {
+    const weekRow: Dayjs[] = [];
+    for (let i = 0; i < WEEK_LENGTH; i++) {
+      weekRow.push(dayCounter);
+      dayCounter = dayCounter.add(1, "day");
+    }
+    matrix.push(weekRow);
+  }
+  return matrix;
 };
